@@ -1,0 +1,60 @@
+## /opt/cubit/15.6-417051/bin/clarox
+## Cubit Version 15.6
+## Cubit Build 417051
+## Revised 2020-04-14 12:40:40 -0600 (Tue, 14 Apr 2020)
+## Running 09/19/2020 01:06:34 PM
+## Command Options:
+
+#{od = 32} leg outer diameter
+#{id = 28} leg inner diameter
+#{l = 20}  stem length
+#{g1 = .1} step gap
+#{hd1 = 24}
+
+create cylinder height {od} radius {od/2}
+move volume 1 x 0 y 0 z {od/2}
+create cylinder height {l} radius {id/2-g1}
+move volume 2 x 0 y 0 z {-l/2} include_merged
+webcut volume 1 2 with cylinder radius {hd1/2} axis z
+delete volume 4
+unite volume all
+compress all
+
+#{a = 0.4}
+#{b = 0.4}
+
+create cylinder height {a} radius {id/2+b}
+webcut volume 2 with cylinder radius {hd1/2} axis z
+delete volume 3
+move surface 12 location surface 5 except x y include_merged
+
+move volume 2 x 0 y 0 z 5 include_merged
+volume 2 copy move x 0 y 0 z {10-a} repeat 1
+unite volume all
+compress all
+
+#{tilt = 17}
+
+move volume all x {-od/2} y 0 z 0 include_merged
+rotate volume all angle {-tilt} about y include_merged
+ 
+webcut volume 1 with plane zplane offset 10
+delete volume 1
+modify curve 16 blend radius 10
+webcut volume 2 with plane zplane offset 8
+delete volume 2
+
+rotate volume all angle {tilt} about y include_merged
+compress all
+
+modify curve 2 chamfer radius 0.5
+modify curve 10 to 13 chamfer radius 0.3
+
+export acis "back.sat" overwrite
+export stl "back.stl" angle 5 overwrite
+
+#create cylinder height {od} radius {2+od/2}
+#move volume 2 x {-od/2} y 0 z {od/2} include_merged
+#move volume 2 x 0 y 0 z -1 include_merged
+#export stl "back-mod.stl" volume 2 overwrite
+
