@@ -1,0 +1,18 @@
+## /opt/cubit/15.6-417051/bin/clarox
+## Cubit Version 15.6
+## Cubit Build 417051
+## Revised 2020-04-14 12:40:40 -0600 (Tue, 14 Apr 2020)
+## Running 09/18/2020 11:42:27 PM
+## Command Options:
+
+import acis "plate1.sat" nofreesurfaces attributes_on separate_bodies
+import acis "angular-texture.sat" nofreesurfaces attributes_on separate_bodies
+volume 2 copy move x 0 y 10 repeat 6
+volume 2 copy move x 0 y -10 repeat 7
+unite volume all
+import acis "31.sat" nofreesurfaces attributes_on separate_bodies
+move volume 3 x 0 y 0 z -1 include_merged
+delete volume 3
+unite volume all
+export acis "31-plate1-angular.sat" overwrite
+export stl "31-plate1-angular.stl" angle 5 overwrite

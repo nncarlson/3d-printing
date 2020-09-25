@@ -1,0 +1,43 @@
+#{width = 240}
+#{height = 150}
+#{thickness = 4}
+#{rim_width = 5}
+#{rim_height = 3}
+#{bevel = 18.435}
+
+brick x {width} y {height} z {thickness}
+move volume 1 x 0 y 0 z {-thickness/2}
+
+volume 1 copy scale x {1 - 2*rim_width/width} y {1-2*rim_width/height} z {3*thickness}
+move volume 2 location 0 0 0
+webcut volume 1 tool volume 2
+delete volume 2
+compress all
+
+#{x0 = (width/2 - rim_width)}
+#{y0 = (height/2 - rim_width)}
+tweak surface 9 move normal to surface 9 distance {rim_height} except x y
+webcut volume 1 with plane xplane offset {-x0} rotate {-bevel} about y center {-x0} 0 0
+webcut volume 1 with plane xplane offset {x0} rotate {180+bevel} about y center {x0} 0 0
+webcut volume 1 with plane yplane offset {y0} rotate {-bevel} about x center 0 {y0} 0
+webcut volume 1 with plane yplane offset {-y0} rotate {180+bevel} about x center 0 {-y0} 0
+delete volume 1
+unite volume all
+compress all
+
+# Glue pockets on back
+create frustum height 2.5 radius 7.5 top 10
+move surface 13 location surface 4 include_merged
+move surface 13 x 80 y 35 include_merged
+webcut volume 1 tool body 2
+volume 2 reflect x
+webcut volume 1 tool body 2
+volume 2 reflect y
+webcut volume 1 tool body 2
+volume 2 reflect x
+webcut volume 1 tool body 2
+delete body 2
+delete volume 3 to 6
+
+set attribute on
+export acis "plate1.sat" overwrite

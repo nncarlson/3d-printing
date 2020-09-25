@@ -1,0 +1,45 @@
+## /opt/cubit/15.6-417051/bin/clarox
+## Cubit Version 15.6
+## Cubit Build 417051
+## Revised 2020-04-14 12:40:40 -0600 (Tue, 14 Apr 2020)
+## Running 09/18/2020 11:42:27 PM
+## Command Options:
+
+# Number 3
+create curve spline location 43.66 242.1 0 location 51.73 238.9 0 location 57.8 234 0 location 61.63 227.7 0 location 62.96 220.2 0 location 60.7 210.7 0 location 54.33 203.4 0 location 44.42 198.7 0 location 31.55 197 0 location 24.31 197.6 0 location 17.32 199.5 0 location 10.75 202.5 0 location 4.789 206.6 0
+create curve polyline location 4.789 206.6 0 location 4.789 216.2 0
+create curve spline location 4.789 216.2 0 location 10.75 212.1 0 location 17.32 209.1 0 location 24.31 207.2 0 location 31.55 206.6 0 location 37.3 207.6 0 location 41.69 210.4 0 location 44.5 214.6 0 location 45.49 220.2 0 location 44.22 230.3 0 location 40.17 236.9 0 location 33.01 240.3 0 location 22.39 241.4 0
+create curve polyline location 22.39 241.4 0 location 22.39 250.2 0
+create curve spline location 22.39 250.2 0 location 33.79 250.9 0 location 41.83 253.6 0 location 46.6 259.3 0 location 48.17 268.8 0 location 47.01 276.1 0 location 43.86 282 0 location 39.2 285.9 0 location 33.52 287.4 0 location 24.69 286.8 0 location 16.07 285 0 location 7.791 282 0 location 0 277.9 0
+create curve polyline location 0 277.9 0 location 0 287.4 0
+create curve spline location 0 287.4 0 location 7.791 291.5 0 location 16.07 294.5 0 location 24.69 296.4 0 location 33.52 297 0 location 46.54 294.8 0 location 57.2 288.7 0 location 64.4 279.7 0 location 67.04 268.8 0 location 65.29 259.9 0 location 60.42 252.1 0 location 53.01 246 0 location 43.66 242.1 0
+create surface curve 1 to 7
+
+# Number 1
+create curve polyline location 127 295.6 0 location 127 198.4 0
+create curve polyline location 127 198.4 0 location 113.9 198.4 0
+create curve spline location 113.9 198.4 0 location 108.1 204.9 0 location 101.8 210.8 0 location 94.9 216.1 0 location 87.59 220.8 0
+create curve polyline location 87.59 220.8 0 location 87.59 230.4 0
+create curve polyline location 87.59 230.4 0 location 109.6 220.2 0
+create curve polyline location 109.6 220.2 0 location 109.6 295.6 0
+create curve polyline location 109.6 295.6 0 location 127 295.6 0
+create surface curve 8 to 14
+
+surface 1 2 reflect y
+move Surface 1 2  x 0 y 297 z 0
+move surface 1 2 x {-127/2} y {-100/2} z 0
+# The bounding box of the "31" surface is 127x100 and lies on z=0
+
+sweep surface 1 2 direction vector 0 0 1 distance 5
+
+# Mount the numbers on a temporary block for moving
+brick x 127 y 100 z 5
+move volume 3 x 0 y 0 z {-5/2}
+imprint volume 1 2 3
+merge volume 1 2 3
+
+# Shift left slightly for better "apparent" centering
+move volume 3 x -2.4 y 0 z 0 include_merged
+
+set attribute on
+export acis "31.sat" overwrite

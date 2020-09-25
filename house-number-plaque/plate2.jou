@@ -1,0 +1,85 @@
+## /opt/cubit/15.6-417051/bin/clarox
+## Cubit Version 15.6
+## Cubit Build 417051
+## Revised 2020-04-14 12:40:40 -0600 (Tue, 14 Apr 2020)
+## Running 09/18/2020 11:42:27 PM
+## Command Options:
+
+#{width = 240}
+#{height = 150}
+#{thickness = 4}
+#{rim_width = 5}
+#{rim_height = 3}
+#{bevel = 18.435}
+
+brick x {width} y {height} z {thickness}
+move volume 1 x 0 y 0 z {-thickness/2}
+
+#{factor = 0.1}
+brick x {factor*width} y {factor*height} z {2*thickness}
+
+move volume 2 x {(1-factor)*width/2} y {(1-factor)*height/2} z 0
+webcut volume 1 tool body 2
+volume 2 reflect x
+webcut volume 1 tool body 2
+volume 2 reflect y
+webcut volume 1 tool body 2
+volume 2 reflect x
+webcut volume 1 tool body 2
+delete body 2 to 6
+compress all
+
+volume 1 copy scale x 1 y 1 z 2
+move volume 2 x 0 y 0 z {thickness/2}
+
+brick x {2*rim_width} y {2*height} z {4*thickness}
+subtract volume 3 from volume 2
+split body 2
+
+brick x {2*width} y {2*rim_width} z {4*thickness}
+subtract volume 6 from volume 4 5
+split body 4 5
+move surface 61 location surface 70 except x z include_merged
+move surface 51 location surface 60 except x z include_merged
+move surface 56 location surface 69 except y z include_merged
+move surface 54 location surface 62 except y z include_merged
+unite volume 7 to 10
+move volume 7 location 0 0 0 include_merged
+webcut volume 1 tool body 7
+delete body 7
+compress all
+
+#{x0 = (width/2 - rim_width)}
+#{y0 = (height/2 - rim_width)}
+tweak surface 25 move normal to surface 25 distance {rim_height} except x y
+webcut volume 1 with plane xplane offset {-x0} rotate {-bevel} about y center {-x0} 0 0
+webcut volume 1 with plane xplane offset {x0} rotate {180+bevel} about y center {x0} 0 0
+webcut volume 1 with plane yplane offset {y0} rotate {-bevel} about x center 0 {y0} 0
+webcut volume 1 with plane yplane offset {-y0} rotate {180+bevel} about x center 0 {-y0} 0
+
+#{x1 = ((1-2*factor)*width/2 - rim_width)}
+#{y1 = ((1-2*factor)*height/2 - rim_width)}
+webcut volume 1 with plane xplane offset {-x1} rotate {-bevel} about y center {-x1} 0 0
+webcut volume 1 with plane xplane offset {x1} rotate {180+bevel} about y center {x1} 0 0
+webcut volume 1 7 with plane yplane offset {y1} rotate {-bevel} about x center 0 {y1} 0
+webcut volume 1 7 with plane yplane offset {-y1} rotate {180+bevel} about x center 0 {-y1} 0
+delete volume 1 7 8 9
+unite volume all
+compress all
+
+# Glue pockets on back
+create frustum height 2.5 radius 7.5 top 10
+move surface 29 location surface 6 include_merged
+move surface 29 x 80 y 35 include_merged
+webcut volume 1 tool body 2
+volume 2 reflect x
+webcut volume 1 tool body 2
+volume 2 reflect y
+webcut volume 1 tool body 2
+volume 2 reflect x
+webcut volume 1 tool body 2
+delete body 2
+delete volume 3 to 6
+
+set attribute on
+export acis "plate2.sat" overwrite

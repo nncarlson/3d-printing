@@ -1,0 +1,26 @@
+## /opt/cubit/15.6-417051/bin/clarox
+## Cubit Version 15.6
+## Cubit Build 417051
+## Revised 2020-04-14 12:40:40 -0600 (Tue, 14 Apr 2020)
+## Running 09/18/2020 11:42:27 PM
+## Command Options:
+
+import acis "plate2.sat" nofreesurfaces attributes_on separate_bodies
+import acis "smooth-texture.sat" nofreesurfaces attributes_on separate_bodies
+volume 2 copy move x 0 y 10 repeat 6
+volume 2 copy move x 0 y -10 repeat 7
+subtract volume 1 from volume 8 keep
+delete volume 8
+split body 16
+delete volume 18 17
+subtract volume 1 from volume 15 keep
+delete volume 15
+split body 19
+delete volume 21 20
+unite volume all
+import acis "31.sat" nofreesurfaces attributes_on separate_bodies
+move volume 3 x 0 y 0 z -1 include_merged
+delete volume 3
+unite volume all
+export acis "31-plate2-smooth.sat" overwrite
+export stl "31-plate2-smooth.stl" angle 5 overwrite

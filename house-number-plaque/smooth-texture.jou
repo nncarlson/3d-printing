@@ -1,0 +1,38 @@
+## /opt/cubit/15.6-417051/bin/clarox
+## Cubit Version 15.6
+## Cubit Build 417051
+## Revised 2020-04-14 12:40:40 -0600 (Tue, 14 Apr 2020)
+## Running 09/18/2020 11:42:27 PM
+## Command Options:
+
+#{length=238}
+#{width=10}
+#{depth=1}
+
+create vertex location {length/2} {-width/2} {depth}
+vertex {Id("vertex")} name "x0"
+create vertex location {length/2} 0 0
+vertex {Id("vertex")} name "x1"
+create vertex location {length/2} {width/2} {depth}
+vertex {Id("vertex")} name "x2"
+create vertex location {length/2} {width} 0
+vertex {Id("vertex")} name "x3"
+create vertex location {length/2} {3*width/2} {depth}
+vertex {Id("vertex")} name "x4"
+create curve spline x0 x1 x2 x3 x4
+curve {Id("curve")} name "tcurve"
+split tcurve at x3
+split tcurve at x1
+#{y1=Id("vertex")}{y2=y1-1}
+curve {Id("curve")} name "foo"
+create curve {y2} {y1}
+curve {Id("curve")} name "tc2"
+create surface tcurve@B tc2
+surface {Id("surface")} name "xsect"
+delete curve tcurve tcurve@A
+delete vertex x1 x2 x3
+sweep xsect direction vector -1 0 0 distance {length}
+compress all
+export acis "smooth-texture.sat" overwrite
+
+
