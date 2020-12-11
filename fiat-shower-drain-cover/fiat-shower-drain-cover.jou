@@ -1,0 +1,98 @@
+
+# CREATE THE SHAPE OF THE DRAIN PLATE
+
+#{n = 0} {r1 = 58.25} {r2 = 62.25} {m = 64} {twopi = 8*atan(1.0)}
+#{line = 'create vertex {polarX(r1 + (r2-r1)*sin(2*(++n-1)*twopi/m)^2,(n-1)*360/m)} {polarY(r1 + (r2-r1)*sin(2*(n-1)*twopi/m)^2,(n-1)*360/m)}'}
+#{loop(m)}
+{rescan(line)}
+#{endloop}
+create surface vertex all
+
+#{t1 = 1.4} thickness of the outer plate
+sweep surface 1 direction 0 0 1 distance {t1}
+
+#{r3 = 38.9} {w = 74.6} {h = 9}
+cylinder height {h} radius {r3}
+brick x {w} y {w} z {h}
+intersect volume 2 3
+
+group "foo" equals curve in volume 3 with length < {1.01*h}
+modify foo expand blend radius 25
+
+#{t3 = 2.1} thickness of the ring
+volume 3 name "ring"
+create body offset ring distance {-t3}
+webcut ring with sheet extended from surface 100 include cavity
+delete volume ring@A ring@B
+
+move surface 128 location surface 66 except x y include_merged
+#unite volume all
+#compress all
+#export stl "shower-drain-cover.stl" angle 10 fast overwrite
+
+webcut volume 1 with sheet extended from surface 117 include cavity
+#{t2 = 2}
+tweak surface 182 move 0 0 {t2-t1}
+
+create sheet offset from surface 125 include cavity offset 7
+create sheet offset from surface 125 include cavity offset 12
+create sheet offset from surface 125 include cavity offset 19
+
+
+webcut volume 6 tool body 7
+webcut volume 6 tool body 8
+webcut volume 6 tool body 9
+delete body 7 8 9
+
+delete volume 10 12
+
+# GRATING
+
+#{w2 = 3}
+brick x {w-0.2} y {w2} z {t2}
+move volume 13 z {t2/2}
+volume 13 copy rotate 90 about z
+
+
+create surface rectangle width {r3-0.2} height {t2} yplane
+move surface 352 x {r3/2} z {t2/2}
+move surface 352 y {-1}
+rotate surface 352 angle -2.5 about z include_merged
+surface 352 copy reflect y
+create volume loft surface 352 353
+delete body with is_sheetbody
+volume 17 rotate 45 about z
+volume 17 copy rotate 90 about z repeat 3
+
+unite volume all
+modify curve with exterior_angle < 95 with length <= 2.1 blend radius 1.5
+
+
+# BRACING
+
+#{t4 = 1.67}
+
+brick x {w-t3} y {t4} z {h}
+move volume 21 z {h/2}
+volume 21 copy rotate 90 about z
+
+brick x {2*r3-t3} y {t4} z {h}
+move volume 23 z {h/2}
+volume 23 rotate 45 about z
+volume 23 copy rotate 90 about z
+
+unite volume all
+
+modify curve with exterior_angle < 50 blend radius 0.5
+
+modify curve with exterior_angle < 95 in surface 485 chamfer radius 0.6
+
+
+brick x 0.4 y 1.5 z {h}
+move volume 25 x {r3} z {h/2}
+volume 25 rotate 45 about z
+volume 25 copy rotate 90 about z repeat 3
+unite volume all
+
+export stl "fiat-shower-drain-cover.stl" angle 10 fast overwrite
+export step "fiat-shower-drain-cover.step" overwrite
